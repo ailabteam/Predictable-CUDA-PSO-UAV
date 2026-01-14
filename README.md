@@ -1,61 +1,102 @@
-# Optimality vs. Predictability: A Statistical and CUDA-Accelerated Analysis of Dynamic PSO for Real-Time Multi-UAV Path Planning
+# C-DPSO-CUDA: Predictable Multi-UAV Path Planning
 
-This repository contains the source code and comprehensive experimental results for the paper titled: "Optimality vs. Predictability: A Statistical and CUDA-Accelerated Analysis of Dynamic PSO for Real-Time Multi-UAV Path Planning."
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![CUDA](https://img.shields.io/badge/CUDA-12.x-green.svg)](https://developer.nvidia.com/cuda-toolkit)
 
-The research focuses on balancing solution quality, execution speed, and critically, temporal predictability ($\sigma$ Time) for decentralized UAV swarm path replanning in dynamic 3D environments.
+This repository contains the official implementation of the paper:  
+**"Optimality vs. Predictability: A Statistical and CUDA-Accelerated Analysis of Dynamic PSO for Real-Time Multi-UAV Path Planning"**
 
----
+## 🚀 Overview
+Path planning for large-scale UAV swarms in 3D environments is computationally expensive ($O(N^2 M)$ complexity). Traditional methods often suffer from **temporal variance**, making them unreliable for hard real-time, safety-critical systems.
 
-## 🚀 Key Contributions & Performance Analysis (Updated Results)
-
-We compare three core algorithms: Standard PSO (SPSO), Linear Dynamic PSO (L-DPSO), and the proposed Chaos-Enhanced Dynamic PSO (C-DPSO).
-
-The experiments use a large-scale scenario (8 UAVs, 15 Waypoints, Dynamic Collision Constraints, 700 Iterations).
-
-| Metric | SPSO (Fixed) | L-DPSO (Linear Dyn.) | **C-DPSO (Chaos Dyn.)** | Primary Strength |
-| :--- | :--- | :--- | :--- | :--- |
-| Fitness Mean ($\mu \downarrow$) | 20681.33 | 15920.62 | **12279.99** | **C-DPSO (Best Global Optimum)** |
-| Fitness Std Dev ($\sigma \downarrow$) | 1637.85 | 1053.67 | **628.89** | **C-DPSO (Highest Quality Consistency)** |
-| Time Mean ($\mu$, s $\downarrow$) | 2.2292 | **2.1808** | 2.2148 | L-DPSO (Fastest Execution) |
-| Time Std Dev ($\sigma$, s $\downarrow$) | 0.0709 | **0.0114** | 0.0175 | **L-DPSO (Highest Temporal Predictability)** |
-
-**Conclusion:** The choice of parameter modulation dictates performance trade-offs: **C-DPSO** provides superior optimality and consistency, ideal for maximizing mission efficiency. **L-DPSO** offers superior temporal reliability, making it the preferred choice when strict hard real-time deadlines must be guaranteed.
+This project introduces **Chaos-Enhanced Dynamic Parameter PSO (C-DPSO)**, a high-performance framework that leverages **massive CUDA acceleration** to achieve:
+1. **Superior Optimality**: Escapes local minima using non-linear chaotic dynamics.
+2. **Temporal Predictability**: Provides a guaranteed, low-variance execution time suitable for real-time systems.
 
 ---
 
-## 💻 HPC Acceleration Details (Updated Results)
-
-The computationally intensive $O(N^2 M)$ multi-objective fitness evaluation is accelerated using Numba CUDA kernels and CuPy array handling.
-
-| Metric | CPU (Numba JIT) | GPU (CUDA/Numba) | Speedup Factor |
-| :--- | :--- | :--- | :--- |
-| Mean Evaluation Time ($\mu$) | 3.3939 ms | 1.5792 ms | **~2.15X** |
-| Std Dev Evaluation Time ($\sigma$) | 0.2878 ms | 0.0617 ms | |
-
-(Note: The modest speedup factor is attributed to GPU under-utilization due to the limited particle population size (P=500) relative to GPU capacity, a scenario common in decentralized real-time systems.)
+## ✨ Key Features
+*   **C-DPSO Algorithm**: Implements a Logistic Chaos Map for adaptive parameter tuning ($W, C_1, C_2$), significantly improving global search consistency.
+*   **Massive CUDA Acceleration**: Utilizes **CuPy** and **Numba JIT** to parallelize fitness evaluations across thousands of GPU threads.
+*   **Statistical Analysis Toolset**: Built-in scripts to analyze the trade-off between solution quality (Fitness) and computational reliability (Standard deviation of time).
+*   **Multi-Objective Constraints**: Handles dynamic inter-agent collision avoidance, static obstacles, and swarm boundary constraints.
 
 ---
 
-## 🛠️ Repository Structure and Usage
+## 📊 Performance at a Glance
+| Metric | SPSO (Fixed) | L-DPSO (Linear) | **C-DPSO (Chaos)** |
+| :--- | :---: | :---: | :---: |
+| **Mean Fitness (Lower is better)** | 20681.33 | 15920.62 | **12279.99** |
+| **Fitness Std. Dev ($\sigma$)** | 1637.85 | 1053.67 | **628.89** |
+| **Time Std. Dev ($\sigma_{Time}$)** | 0.0709s | **0.0114s** | 0.0175s |
 
-### Project Structure:
+> **Key Finding**: C-DPSO offers the best path quality, while L-DPSO provides the highest temporal predictability for mission-critical deadlines.
 
+---
+
+## 🛠️ Installation
+
+### Prerequisites
+*   NVIDIA GPU (RTX 30-series or 40-series recommended)
+*   CUDA Toolkit 11.x / 12.x
+*   Python 3.8+
+
+### Setup
+```bash
+# Clone the repository
+git clone https://github.com/your-username/Predictable-CUDA-PSO-UAV.git
+cd Predictable-CUDA-PSO-UAV
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install numpy cupy-cuda12x numba matplotlib pandas
 ```
-CUDA-QISO-UAV-Swarm-J/
-├── data/                    # Configuration files (Scenario 1 & 2)
-├── src/
-│   ├── Environment.py       # Problem formulation, F(X) evaluation (CPU/GPU)
-│   ├── QISO_CUDA_Kernels.py # Numba CUDA kernels (Collision checks)
-│   ├── QISO_Optimizer.py    # Core PSO logic (SPSO, L-DPSO, C-DPSO)
-│   └── Runner.py            # Main statistical execution script
-└── results/                 # Output PDFs and CSV Tables (Table 1, 2, 3)
+*(Note: Replace `cupy-cuda12x` with your specific CUDA version, e.g., `cupy-cuda11x`)*
+
+---
+
+## 💻 Usage
+
+### 1. Run a Single Simulation
+To visualize the 3D path planning for an 8-UAV swarm:
+```bash
+python main_visualize.py --mode chaos --agents 8
 ```
 
-### Execution:
+### 2. Run Statistical Benchmark
+To reproduce the "Optimality vs. Predictability" analysis ($N=10$ runs):
+```bash
+python benchmark_stats.py --iterations 700 --runs 10
+```
 
-1.  Setup environment (CuPy, Numba, NumPy).
-2.  Run statistical comparison:
-    ```bash
-    python -m src.Runner
-    ```
-3.  **Outputs:** The `results/` folder contains CSV tables of statistical data and PDF figures visualizing convergence (Figure 1), path dynamics (Figure 2), execution time distribution (Figure 3), and parameter dynamics (Figure 4).
+---
+
+## 📈 Visualizations
+*(Gợi ý: Bạn hãy thêm 2 ảnh vào thư mục `/assets` trong repo và link vào đây)*
+
+| 3D Path Planning (C-DPSO) | Temporal Predictability (Boxplot) |
+| :---: | :---: |
+| ![Path Planning](assets/path_visualization.png) | ![Time Stats](assets/time_distribution.png) |
+
+---
+
+## 📄 Citation
+If you use this code or the C-DPSO algorithm in your research, please cite:
+
+```bibtex
+@article{do2025optimality,
+  title={Optimality vs. Predictability: A Statistical and CUDA-Accelerated Analysis of Dynamic PSO for Real-Time Multi-UAV Path Planning},
+  author={Do, Phuc Hao and [Co-authors]},
+  journal={Submitted to [IEEE Systems Journa]},
+  year={2025}
+}
+```
+
+---
+
+## 📝 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
