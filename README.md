@@ -79,11 +79,11 @@ python benchmark_stats.py --iterations 700 --runs 10
 If you use this code or the C-DPSO algorithm in your research, please cite:
 
 ```bibtex
-@article{do2025optimality,
+@article{do2026optimality,
   title={Optimality vs. Predictability: A Statistical and CUDA-Accelerated Analysis of Dynamic PSO for Real-Time Multi-UAV Path Planning},
   author={Do, Phuc Hao and [Co-authors]},
   journal={Submitted to [IEEE Systems Journa]},
-  year={2025}
+  year={2026}
 }
 ```
 
