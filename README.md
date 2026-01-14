@@ -75,15 +75,6 @@ python benchmark_stats.py --iterations 700 --runs 10
 
 ---
 
-## 📈 Visualizations
-*(Gợi ý: Bạn hãy thêm 2 ảnh vào thư mục `/assets` trong repo và link vào đây)*
-
-| 3D Path Planning (C-DPSO) | Temporal Predictability (Boxplot) |
-| :---: | :---: |
-| ![Path Planning](assets/path_visualization.png) | ![Time Stats](assets/time_distribution.png) |
-
----
-
 ## 📄 Citation
 If you use this code or the C-DPSO algorithm in your research, please cite:
 
